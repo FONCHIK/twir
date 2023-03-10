@@ -1,12 +1,8 @@
-import { Html, Head, Main, NextScript, DocumentProps } from 'next/document';
+import { Html, Head, Main, NextScript } from 'next/document';
 
-import { i18n } from '../next-i18next.config.js';
-
-export default function Document({ __NEXT_DATA__ }: DocumentProps) {
-  const currentLocale = __NEXT_DATA__.locale || i18n.defaultLocale;
-
+export default () => {
   return (
-    <Html lang={currentLocale}>
+    <Html>
       <Head />
       <body>
         <Main />
@@ -14,4 +10,4 @@ export default function Document({ __NEXT_DATA__ }: DocumentProps) {
       </body>
     </Html>
   );
-}
+};

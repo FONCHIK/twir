@@ -1,8 +1,6 @@
-import '@unocss/reset/tailwind.css';
-import 'uno.css';
-import { appWithTranslation } from 'next-i18next';
 import type { AppProps } from 'next/app';
+import '../global.css';
 
-export default appWithTranslation(({ Component, pageProps }: AppProps) => {
+export default ({ Component, pageProps }: AppProps) => {
   return <Component {...pageProps} />;
-});
+};

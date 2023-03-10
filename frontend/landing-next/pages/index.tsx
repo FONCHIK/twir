@@ -1,24 +1,14 @@
-import { GetServerSideProps } from 'next';
-import { useTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import setLanguage from 'next-translate/setLanguage';
+import useTranslation from 'next-translate/useTranslation';
 import { Inter } from 'next/font/google';
 import Head from 'next/head';
-import Link from 'next/link.js';
-import { useRouter } from 'next/router.js';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const getServerSideProps: GetServerSideProps = async ({ locale }) => ({
-  props: {
-    ...(await serverSideTranslations(locale ?? 'en', ['common'])),
-  },
-});
+export default () => {
+  const { t, lang } = useTranslation('common');
 
-export default function Home() {
-  const router = useRouter();
-  const { t } = useTranslation('common');
-
-  const changeTo = router.locale === 'en' ? 'ru' : 'en';
+  const oppositeLocale = lang === 'ru' ? 'en' : 'ru';
 
   return (
     <>
@@ -29,12 +19,14 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main style={inter.style}>
-        <Link href="/" locale={changeTo}>
-          <button>Change locale</button>
-        </Link>
-        <h1 className="text-center font-600">{t('hello')}</h1>
-        <button className="bg-primary text-white px-4 py-3 rounded-2 font-600">Hello</button>
+        <h1 className="text-lg">{t('hello')}</h1>
+        <button
+          className="bg-brand-600 text-white px-4 py-3 rounded-md"
+          onClick={() => setLanguage(oppositeLocale)}
+        >
+          Set lang
+        </button>
       </main>
     </>
   );
-}
+};
