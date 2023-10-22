@@ -1,0 +1,75 @@
+name: Build
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: './go.work'
+      - uses: actions/setup-node@v3
+        with:
+          go-version-file: './go.work'
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+
+      - name: Ubuntu deps
+        run: |
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt-get update
+          sudo apt-get install -y build-essential git protobuf-compiler curl wget sudo software-properties-common python3
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Save files to workspace
+        run: |
+          mkdir -p $RUNNER_WORKSPACE/twir
+          cp -R . $RUNNER_WORKSPACE/twir
+
+#  matrix_job:
+#    runs-on: ubuntu-latest
+#
+#    needs: build
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v2
+#
+#      - name: Restore files from workspace
+#        run: |
+#          # Copy the files from the workspace to the current directory
+#          cp -R ${{ runner.workspace }}/my-files/* .
+#
+#      - name: Matrix Job
+#        run: |
+#          echo "Running a matrix job on ${{ matrix.os }}"
+#          # You can use the copied files in this job
